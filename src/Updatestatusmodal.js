@@ -18,7 +18,7 @@ const style = {
   p: 8,
 };
 
-export default function BasicModal({ rowSelectionModel,getData , setCamerasData,camerasData}) {
+export default function BasicModal({ rowSelectionModel,setFilterData,filterData}) {
   const [open, setOpen] = React.useState(false);
   const dispatch=useDispatch();
   const handleOpen = () => setOpen(true);
@@ -46,7 +46,7 @@ export default function BasicModal({ rowSelectionModel,getData , setCamerasData,
       setOpen(false);
   };
   const deleteRow=()=>{
-    setCamerasData(camerasData.filter((param)=>param.id!==payload.id))
+    setFilterData(filterData.filter((param)=>param.id!==payload.id))
     setOpen(false);
   }
   return (

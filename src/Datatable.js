@@ -10,11 +10,7 @@ import "react-circular-progressbar/dist/styles.css";
 import FilterDramaIcon from "@mui/icons-material/FilterDrama";
 import SmartScreenIcon from "@mui/icons-material/SmartScreen";
 import BasicModal from "./Updatestatusmodal";
-import {
-
-  KeyboardArrowDown,
- 
-} from "@mui/icons-material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import RssFeedOutlinedIcon from "@mui/icons-material/RssFeedOutlined";
@@ -163,64 +159,49 @@ const columns = [
 const paginationModel = { page: 0, pageSize: 9 };
 
 export default function DataTable() {
-  const [data, setData] = useState([]);
-  const [filterData, setFilterData] = useState([]);
   const [select, setSelect] = useState(false);
-  const [location, setLocation] = useState("");
   const [locationOptions, setLocationOptions] = useState();
-  const [statusdata, setStatusData] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState(0);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
   let state = useSelector((state) => state.camera.value) || [];
   let loader = useSelector((state) => state.camera.isLoading);
-
-
+  let loc = useSelector((state) => state.camera) || [];
   const [camerasData, setCamerasData] = useState([]);
+  const [filterData, setFilterData] = useState(loc.value.data || []);
+
+  let newData =
+    filterData &&
+    filterData.filter(
+      (item) =>
+        item.location.includes(loc.location) &&
+        item.status.includes(loc.status) &&
+        JSON.stringify(item).toLowerCase().indexOf(search.toLowerCase()) !== -1
+    );
 
   useEffect(() => {
     dispatch(fetchCameras());
   }, []);
+
   useEffect(() => {
     setCamerasData(state.data);
+    setFilterData(state.data);
     setLocationOptions([
       ...new Set(state.data && state.data.map((item) => item.location)),
     ]);
   }, [state.data]);
 
   const handleChangeLocation = (event, value) => {
-    dispatch(filterCamerasbyLocation({ value, state }));
-    if (value != "") {
-      setCamerasData(state.data.filter((param) => param.location == value));
-    } else {
-      setCamerasData(state.data);
-    }
+    dispatch(filterCamerasbyLocation(value));
   };
   const handleChangeStatus = (event, value) => {
     dispatch(filterCamerasbyStatus(value));
-    if (value != "") {
-      setCamerasData(state.data.filter((param) => param.status == value));
-    } else {
-      setCamerasData(state.data);
-    }
   };
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
-    if (e.target.value != "") {
-      setCamerasData(
-        camerasData.filter(
-          (data) =>
-            JSON.stringify(data)
-              .toLowerCase()
-              .indexOf(e.target.value.toLowerCase()) !== -1
-        )
-      );
-    } else {
-      setCamerasData(state.data);
-    }
   };
-  
+
   return (
     <div sx={{ width: "100%" }}>
       <Box
@@ -289,8 +270,8 @@ export default function DataTable() {
           {select ? (
             <BasicModal
               rowSelectionModel={rowSelectionModel}
-              setCamerasData={setCamerasData}
-              camerasData={camerasData}
+              setFilterData={setFilterData}
+              filterData={filterData}
             />
           ) : (
             ""
@@ -302,7 +283,7 @@ export default function DataTable() {
         {loader && <LinearProgress />}
         <DataGrid
           sx={{ color: "#6d6e6f" }}
-          rows={camerasData}
+          rows={newData}
           onRowSelectionModelChange={(selection) => {
             if (selection.length == 1) {
               let params = state.data.filter((cell) => cell.id == selection);

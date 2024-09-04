@@ -23,7 +23,6 @@ export const cameraSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchCameras.fulfilled, (state, action) => {
       state.isLoading = false;
-      console.log(state.value);
       state.value = action.payload;
      
       state.duplicate=action.payload
@@ -39,7 +38,7 @@ export const cameraSlice = createSlice({
   },
   reducers: {
     filterCamerasbyLocation: (state, action) => {
-      console.log(action.payload);
+      // console.log(action.payload);
      
       state.location = action.payload;
      
