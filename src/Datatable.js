@@ -21,6 +21,7 @@ import Input from "@mui/joy/Input";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useSelector,useDispatch } from 'react-redux';
 import { fetchCameras ,} from "./store";
+import LinearProgress from '@mui/material/LinearProgress';
 const activeStyle = {
   cursor: "pointer",
   fontWeight: 600,
@@ -170,8 +171,8 @@ export default function DataTable() {
   const[search,setSearch]=useState("");
   const dispatch=useDispatch();
   let state=useSelector((state)=>state.camera.value) || [];
-  // let state2=useSelector((state)=>state.camera) || [];
-
+  let loader=useSelector(state=>state.camera.isLoading);
+console.log(loader);
 
   const [camerasData,setCamerasData]=useState([] );
 // console.log(camerasData);
@@ -266,7 +267,7 @@ console.log(state.data)
       <Box sx={{ ml: 5 }}>
         <p style={{ fontSize: "17px" }}>Manage your Camera here</p>
       </Box>
-  
+   
       <Box sx={{  display: "flex" ,background:"white",padding:2,ml:5,mr:5,mb:0.5}}>
         <Select
           onChange={handleChangeLocation}
@@ -304,6 +305,7 @@ console.log(state.data)
     
 
       <Box sx={{ml: 5, mr: 5, color: "grey", background: "white"}}>
+      {loader && <LinearProgress />}
       <DataGrid
         sx={{color:"#6d6e6f"  }}
         rows={camerasData}
