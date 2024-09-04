@@ -1,9 +1,8 @@
 import * as React from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import Paper from "@mui/material/Paper";
 import { useState, useEffect } from "react";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
-import { filterCamerasbyLocation,filterCamerasbyStatus } from "./store";
+import { filterCamerasbyLocation, filterCamerasbyStatus } from "./store";
 import { buildStyles } from "react-circular-progressbar";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import { CircularProgressbar } from "react-circular-progressbar";
@@ -11,7 +10,11 @@ import "react-circular-progressbar/dist/styles.css";
 import FilterDramaIcon from "@mui/icons-material/FilterDrama";
 import SmartScreenIcon from "@mui/icons-material/SmartScreen";
 import BasicModal from "./Updatestatusmodal";
-import { CollectionsOutlined, KeyboardArrowDown, Search } from "@mui/icons-material";
+import {
+
+  KeyboardArrowDown,
+ 
+} from "@mui/icons-material";
 import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import RssFeedOutlinedIcon from "@mui/icons-material/RssFeedOutlined";
@@ -19,9 +22,9 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { Box } from "@mui/material";
 import Input from "@mui/joy/Input";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { useSelector,useDispatch } from 'react-redux';
-import { fetchCameras ,} from "./store";
-import LinearProgress from '@mui/material/LinearProgress';
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCameras } from "./store";
+import LinearProgress from "@mui/material/LinearProgress";
 const activeStyle = {
   cursor: "pointer",
   fontWeight: 600,
@@ -56,7 +59,7 @@ const columns = [
           {" "}
           <FiberManualRecordIcon
             fontSize="xl"
-            style={{ color:params.row.hasWarning? "red":"green" }}
+            style={{ color: params.row.hasWarning ? "red" : "green" }}
           />{" "}
           {params.row.name}
         </div>
@@ -74,15 +77,15 @@ const columns = [
           style={{
             display: "flex",
             alignItems: "center",
-            verticalAlign:"middle",
+            verticalAlign: "middle",
             color: "grey",
             justifyContent: "space-around",
           }}
         >
-         <FilterDramaIcon  />
-          
+          <FilterDramaIcon />
+
           {/* <FilterDramaIcon />{" "} */}
-          <div style={{ width: 30, height: 30 ,marginBottom:"20px"}}>
+          <div style={{ width: 30, height: 30, marginBottom: "20px" }}>
             <CircularProgressbar
               styles={buildStyles({
                 textColor: "black",
@@ -93,8 +96,8 @@ const columns = [
               text={`${params.row.health.cloud}`}
             />
           </div>
-          <SmartScreenIcon sx={{ml:1}}/>
-          <div style={{ width: 30, height: 30,marginBottom:"20px" }}>
+          <SmartScreenIcon sx={{ ml: 1 }} />
+          <div style={{ width: 30, height: 30, marginBottom: "20px" }}>
             <CircularProgressbar
               styles={buildStyles({
                 textColor: "black",
@@ -118,7 +121,6 @@ const columns = [
     align: "center",
     headerName: "TASK",
     renderCell: (params) => {
-      
       return <div style={{ cursor: "pointer" }}>Task {params.row.tasks}</div>;
     },
     width: 210,
@@ -162,93 +164,73 @@ const paginationModel = { page: 0, pageSize: 9 };
 
 export default function DataTable() {
   const [data, setData] = useState([]);
-  const[filterData,setFilterData]=useState([])
+  const [filterData, setFilterData] = useState([]);
   const [select, setSelect] = useState(false);
   const [location, setLocation] = useState("");
   const [locationOptions, setLocationOptions] = useState();
   const [statusdata, setStatusData] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState(0);
-  const[search,setSearch]=useState("");
-  const dispatch=useDispatch();
-  let state=useSelector((state)=>state.camera.value) || [];
-  let loader=useSelector(state=>state.camera.isLoading);
-console.log(loader);
+  const [search, setSearch] = useState("");
+  const dispatch = useDispatch();
+  let state = useSelector((state) => state.camera.value) || [];
+  let loader = useSelector((state) => state.camera.isLoading);
 
-  const [camerasData,setCamerasData]=useState([] );
-// console.log(camerasData);
+
+  const [camerasData, setCamerasData] = useState([]);
+
   useEffect(() => {
     dispatch(fetchCameras());
-    
-  
   }, []);
-  useEffect(()=>{
+  useEffect(() => {
     setCamerasData(state.data);
     setLocationOptions([
-      ...new Set(state.data&&state.data.map((item) => item.location)),
-    ])
-  },[state.data])
-  const getData = async () => {
-    await fetch('https://api-app-staging.wobot.ai/app/v1/fetch/cameras', {
-      headers: { Authorization: "Bearer 4ApVMIn5sTxeW7GQ5VWeWiy " },
-    })
-      .then((resp) => resp.json())
-      .then((json) => {
-        console.log(json.data);
-        setData(json.data);
-        setFilterData(json.data);
-        setStatusData(json.data);
-        setLocationOptions([
-          ...new Set(json.data.map((item) => item.location)),
-        ]);
-      });
-  };
+      ...new Set(state.data && state.data.map((item) => item.location)),
+    ]);
+  }, [state.data]);
 
   const handleChangeLocation = (event, value) => {
-    dispatch(filterCamerasbyLocation({value,state}));
-    if(value!=""){
-     
-      setCamerasData(state.data.filter((param)=>param.location==value));
-    }
-    else{
-      setCamerasData(state.data)
-    }
-   
-
-
-  };
-  const handleChangeStatus = (event, value) => {
-    dispatch(filterCamerasbyStatus(value))
-    if(value!=""){
-      setCamerasData(state.data.filter((param)=>param.status==value));
-    }
-    else{
-      setCamerasData(state.data)
-    }
-  };
-
-  const handleSearch=(e)=>{
-    setSearch(e.target.value)
-    if(e.target.value!=""){
-      setCamerasData(camerasData.filter((data)=>JSON.stringify(data).toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1));
-    }
-    else{
+    dispatch(filterCamerasbyLocation({ value, state }));
+    if (value != "") {
+      setCamerasData(state.data.filter((param) => param.location == value));
+    } else {
       setCamerasData(state.data);
     }
-   
+  };
+  const handleChangeStatus = (event, value) => {
+    dispatch(filterCamerasbyStatus(value));
+    if (value != "") {
+      setCamerasData(state.data.filter((param) => param.status == value));
+    } else {
+      setCamerasData(state.data);
+    }
+  };
 
-     
-  } 
-  console.log(locationOptions);
-console.log(camerasData)
-console.log(state.data)
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    if (e.target.value != "") {
+      setCamerasData(
+        camerasData.filter(
+          (data) =>
+            JSON.stringify(data)
+              .toLowerCase()
+              .indexOf(e.target.value.toLowerCase()) !== -1
+        )
+      );
+    } else {
+      setCamerasData(state.data);
+    }
+  };
+  
   return (
     <div sx={{ width: "100%" }}>
       <Box
         sx={{ m: 5, textAlign: "end", display: "flex", justifyContent: "end" }}
       >
         <Input
-        value={search}
-          onChange={(e)=>{handleSearch(e)}}
+          value={search}
+          onChange={(e) => {
+            handleSearch(e);
+          }}
           endDecorator={<SearchOutlinedIcon />}
           sx={{
             width: "300px",
@@ -263,12 +245,21 @@ console.log(state.data)
       <Box sx={{ ml: 5 }}>
         <h2>Cameras</h2>
       </Box>
-      
+
       <Box sx={{ ml: 5 }}>
         <p style={{ fontSize: "17px" }}>Manage your Camera here</p>
       </Box>
-   
-      <Box sx={{  display: "flex" ,background:"white",padding:2,ml:5,mr:5,mb:0.5}}>
+
+      <Box
+        sx={{
+          display: "flex",
+          background: "white",
+          padding: 2,
+          ml: 5,
+          mr: 5,
+          mb: 0.5,
+        }}
+      >
         <Select
           onChange={handleChangeLocation}
           placeholder="Location"
@@ -277,7 +268,8 @@ console.log(state.data)
           sx={{ width: 240, color: "gray" }}
         >
           <Option value="">Location</Option>
-          {locationOptions&&locationOptions.map((param) => {
+          {locationOptions &&
+            locationOptions.map((param) => {
               return <Option value={param}>{param}</Option>;
             })}
         </Select>
@@ -292,42 +284,41 @@ console.log(state.data)
           <Option value="">Status</Option>
           <Option value="Active">Active</Option>
           <Option value="Inactive">Inactive</Option>
-          
         </Select>
         <Box sx={{ textAlign: "end", mr: 5 }}>
-        {select ? (
-          <BasicModal rowSelectionModel={rowSelectionModel}getData={getData}  setCamerasData={setCamerasData} camerasData={camerasData}  />
-        ) : (
-          ""
-        )}
+          {select ? (
+            <BasicModal
+              rowSelectionModel={rowSelectionModel}
+              setCamerasData={setCamerasData}
+              camerasData={camerasData}
+            />
+          ) : (
+            ""
+          )}
+        </Box>
       </Box>
-      </Box>
-    
 
-      <Box sx={{ml: 5, mr: 5, color: "grey", background: "white"}}>
-      {loader && <LinearProgress />}
-      <DataGrid
-        sx={{color:"#6d6e6f"  }}
-        rows={camerasData}
-        onRowSelectionModelChange={(selection) => {
-          
-          if (selection.length == 1) {
-            let params = state.data.filter((cell) => cell.id == selection);
-            setRowSelectionModel(params[0]);
-            setSelect(true);
-          } else if (selection.length == 0) {
-            setSelect(false);
-          }
-        }}
-        disableMultipleRowSelection={true}
-        columns={columns}
-        initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-      />
+      <Box sx={{ ml: 5, mr: 5, color: "grey", background: "white" }}>
+        {loader && <LinearProgress />}
+        <DataGrid
+          sx={{ color: "#6d6e6f" }}
+          rows={camerasData}
+          onRowSelectionModelChange={(selection) => {
+            if (selection.length == 1) {
+              let params = state.data.filter((cell) => cell.id == selection);
+              setRowSelectionModel(params[0]);
+              setSelect(true);
+            } else if (selection.length == 0) {
+              setSelect(false);
+            }
+          }}
+          disableMultipleRowSelection={true}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
       </Box>
-     
-
     </div>
   );
 }

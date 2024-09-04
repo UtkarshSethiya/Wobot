@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { baseApi } from "./baseapi";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 export const fetchCameras = createAsyncThunk("fetchCameras", async () => {
   const response = await fetch(
