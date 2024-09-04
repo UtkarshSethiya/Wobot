@@ -55,7 +55,7 @@ const columns = [
           {" "}
           <FiberManualRecordIcon
             fontSize="xl"
-            style={{ color: "green" }}
+            style={{ color:params.row.hasWarning? "red":"green" }}
           />{" "}
           {params.row.name}
         </div>

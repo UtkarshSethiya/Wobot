@@ -18,8 +18,3 @@ function App() {
 }
 
 export default App;
-// if(state){
-//   // setLocationOptions([
-//   //   ...new Set(camerasData.map((item) => item.location)),
-//   // ])
-// }
